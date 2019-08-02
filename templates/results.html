@@ -2,4 +2,22 @@
 
 {% block content %}
 Your results...
+
+  {{ prediction }}
+  {{ age }}
+
+Input Values:
+
+<div class="field is-grouped is-grouped-multiline">
+
+{% for field, value in inputValues.items() %}
+  <div class="control">
+    <div class="tags has-addons">
+      <span class="tag">{{ field }}</span>
+      <span class="tag is-dark">{{ value }}</span>
+    </div>
+  </div>
+{% endfor %}
+</div>
+
 {% endblock %}

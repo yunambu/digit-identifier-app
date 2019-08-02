@@ -47,7 +47,7 @@ def load_keras_model():
     return model
 
 
-def valid_request():
+def valid_image_request():
     return request.method == "POST" and request.files.get("image")
 
 
@@ -72,9 +72,45 @@ def prepare_image(image, target_size):
     return image
 
 
+def valid_form_request():
+    return request.method == "POST" and request.files.get("image")
+
+
+@app.route('/process_form', methods=["POST"])
+def process_form():
+    # values = {}
+
+    error = False
+    if not valid_form_request():
+        error = True
+
+    age = request.form['age']
+    bpSystolic = request.form['bpSystolic']
+    bpDiastolic = request.form['bpDiastolic']
+    weight = request.form['weight']  # kg
+    height = request.form['height']  # cm
+    # normal, aboveNormal, or wellAboveNormal
+    cholesterol = request.form['cholesterol']
+    cholesterolDescriptions = {
+        "normal": "Normal",
+        "aboveNormal": "Above Normal",
+        "wellAboveNormal": "Well Above Normal",
+    }
+
+    inputValues = {
+        "Age": age,
+        "Blood Pressure": "%s/%s" % (bpSystolic, bpDiastolic),
+        "Weight": "%s kg" % weight,
+        "Height": "%s cm" % height,
+        "Cholesterol": cholesterolDescriptions[cholesterol]
+    }
+
+    return render_template('results.html', prediction="asdf", inputValues=inputValues)
+
+
 @app.route('/predict', methods=["POST"])
 def predict():
-    if not valid_request():
+    if not valid_image_request():
         return jsonify({
             "success": False,
             "error": "You must provide a valid `image`."
