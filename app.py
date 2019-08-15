@@ -81,8 +81,9 @@ def prepare_image(image, target_size):
     image = img_to_array(image)
     image = np.expand_dims(image, axis=0)
 
+    # NOTE: CNN model does not need this
     # We need 1x784 shape as input for this model
-    image = image.reshape(1, 784)
+    # image = image.reshape(1, 784)
 
     # return the processed image
     return image
