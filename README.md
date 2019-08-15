@@ -1,31 +1,17 @@
+# Running on Heroku: Deploy
 
-Run using:
+* Create a free Heroku account: https://signup.heroku.com/
+* Visit the Github repo: https://github.com/thecodinghive/heart-disease-predictor-app
+* Optional: Create or use existing Github account to fork this repository, so that you can edit the app & upload your own model.
 
-    python3 app.py
+Click this button to deploy the app:
 
-Setup:
-
-* TODO: Setup dependencies via conda.
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
 
-# Running on CoCalc
+# Customize your app.
 
-Can easily run the server using Terminal:
-https://doc.cocalc.com/howto/webserver.html#raw-files-server
+Search the code for `TODO`:
 
-Then access at:
-https://cocalc.com/cfca8905-cec9-4b44-b37e-33f41dcc8068/port/5000/
-
-Caveat being that a logged-in session is required
-
-Can use Postman Interceptor to get around this:
-https://chrome.google.com/webstore/detail/postman-interceptor/aicmkgpgakddgnaphhhpliifpcfhicfo?hl=en
-
-Turn on interceptor and add filter for your cocal project, e.g.:
-
-    *cocalc.com/cfca8905-cec9-4b44-b37e-33f41dcc8068/port/5000*
-
-In Postman app (instructions here: https://community.getpostman.com/t/interceptor-integration-for-postman-native-apps/5290):
-* Click Interceptor icon
-* Go to Cookies Tab and
-[ABORT!! Requires installing an interceptor app on mac osx ... feels kinda like installing a backdoor so nope..]
+* [Change the app name in `templates/layout.html`](templates/layout.html)
+* [Change the model filename in `app.py`](app.py)

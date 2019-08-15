@@ -1,0 +1,57 @@
+{% extends 'layout.html' %}
+
+{% block title %}Heart Disease Prediction{% endblock %}
+
+{% block preendbody %}
+<script type="text/javascript">
+  var file = document.getElementById("file");
+  file.onchange = function () {
+    if (file.files.length > 0) {
+      document.getElementById('filename').innerHTML = file.files[0].name;
+    }
+  };
+</script>
+{% endblock %}
+
+{% block content %}
+<form method="post" action="./process_form" enctype="multipart/form-data">
+  <div class="columns">
+    <div class="column is-half is-offset-one-quarter">
+      <div class="notification">
+        Welcome to our digit identifier! Upload an image of a handwritten digit, and we will attempt
+        to predict what number it represents. For best results, upload an image with a white background
+        and written digit centered.
+      </div>
+
+      <div class="field">
+        <div class="file is-centered is-boxed has-name">
+          <label class="file-label">
+            <input class="file-input" id="file" type="file" name="image">
+            <span class="file-cta">
+              <span class="file-icon">
+                <i class="fas fa-upload"></i>
+              </span>
+              <span class="file-label">
+                Upload Image
+              </span>
+            </span>
+            <span class="file-name" id="filename">
+              Choose image...
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="buttons is-centered">
+        <div class="field is-grouped">
+          <div class="control">
+            <input type="submit" class="button is-link">
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</form>
+{% endblock %}

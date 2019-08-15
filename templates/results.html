@@ -1,23 +1,44 @@
 {% extends 'layout.html' %}
 
+{% block title %}Digit Prediction Results{% endblock %}
+
 {% block content %}
-Your results...
-
-  {{ prediction }}
-  {{ age }}
-
-Input Values:
-
-<div class="field is-grouped is-grouped-multiline">
-
-{% for field, value in inputValues.items() %}
-  <div class="control">
-    <div class="tags has-addons">
-      <span class="tag">{{ field }}</span>
-      <span class="tag is-dark">{{ value }}</span>
+<div class="results">
+  <div class="results-main">
+    <div class="results-num">
+      {{ prediction }}
     </div>
   </div>
-{% endfor %}
-</div>
 
+  <div class="back-button container has-text-centered">
+    <a class="button is-small is-text" href=".{{ url_for('.form') }}">
+      <span class="icon">
+        <i class="fas fa-undo"></i>
+      </span>
+      <span>Try Again</span>
+    </a>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<div class="container has-text-centered">
+  <div class="input-values">
+    <div class="is-italic has-text-grey">
+      Non-zero Probabilities:
+    </div>
+    <div class="field is-grouped is-grouped-multiline">
+      {% for field, value in probabilities.items() %}
+        {% if value >= 0.000001 %}
+          <div class="control">
+            <div class="tags has-addons are-small">
+              <span class="tag is-dark">{{ field }}</span>
+              <span class="tag {% if value > 0.5 %}is-success{% endif %}">{{ '%.5f%%' % (value * 100) }}</span>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
 {% endblock %}

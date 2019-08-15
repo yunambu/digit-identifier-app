@@ -3,60 +3,57 @@
 
 <head>
   <meta charset="utf-8">
-  <!-- bootstrap: -->
-  <!-- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> -->
-  <!-- bulma -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
+  <!-- We are using Bulma to provide some nice styles: https://bulma.io/documentation/ -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
-  <!-- For Bulma Icons -->
   <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+
+  <link rel="stylesheet" href="./static/style.css">
 
   {% block head %}{% endblock %}
 
-  <title>{% block title %}Hello, world!{% endblock %}</title>
+  <title>{% block title %}The Coding Hive{% endblock %}</title>
 </head>
 
 <body>
-  <section class="hero is-primary is-bold">
+  <section class="hero is-warning is-bold">
     <div class="hero-body">
       <div class="container">
-        <h1 class="title">
-          The Coding Hive
-        </h1>
-        <h2 class="subtitle">
-          Primary subtitle
-        </h2>
+        <div id="logo">
+          <img src="./static/logo-text.png" alt="The Coding Hive Logo" />
+        </div>
       </div>
     </div>
   </section>
 
   <section class="section">
     <div class="container">
+
+      <h1 class="title is-size-3-tablet is-size-4-mobile has-text-centered	">
+        <i class="fas fa-magic"></i>
+        <!-- TODO: Change to your own app name. -->
+        Digit Identifier
+      </h1>
+
       {% block content %}{% endblock %}
+
     </div>
   </section>
 
-
-
-  <!-- <footer class="footer">
+  <footer class="footer">
     <div class="content has-text-centered">
-      <p>
-        <strong>&copy; 2019 The Coding Hive</strong> by <a href="https://jgthms.com">Jeremy Thomas</a>. The source code is licensed
-        <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
-        is licensed <a href="http://www.thecodinghive.com">The Coding Hive</a>.
+      {% block footer %}{% endblock %}
+
+      <p class="disclaimer is-size-7">
+        <em>
+          * Note that this tool is for informational purposes only and does not
+            constitute medical advice. Please consult your doctor.
+        </em>
       </p>
     </div>
-  </footer> -->
+  </footer>
 
-
-  <!-- Bootstrap JS... but not using this for now (Bulma instead) -->
-  <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script> -->
-
+  {% block preendbody %}{% endblock %}
 </body>
-
 </html>
