@@ -1,9 +1,8 @@
 name: flask-digit-identifier
 
-# TODO: not sure if this is necessary for image version, so leaving it out for now.
 # nomkl is needed to avoid issues deploying to Heroku
 dependencies:
-  # - nomkl
+  - nomkl
   - flask
   - keras
   - Pillow
