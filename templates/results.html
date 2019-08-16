@@ -22,23 +22,37 @@
 {% endblock %}
 
 {% block footer %}
-<div class="container has-text-centered">
-  <div class="input-values">
-    <div class="is-italic has-text-grey">
-      Non-zero Probabilities:
-    </div>
-    <div class="field is-grouped is-grouped-multiline">
-      {% for field, value in probabilities.items() %}
-        {% if value >= 0.000001 %}
-          <div class="control">
-            <div class="tags has-addons are-small">
-              <span class="tag is-dark">{{ field }}</span>
-              <span class="tag {% if value > 0.5 %}is-success{% endif %}">{{ '%.5f%%' % (value * 100) }}</span>
-            </div>
+<div class="container has-text-centered footer-section">
+  <div class="is-italic has-text-grey">
+    Input Image (after transformations, zoomed):
+  </div>
+  <div id="input-image">
+    {% for row in image[0] %}
+      <div class="row">
+        {% for val in row %}
+          <div class="pixel" style="background-color: rgb({{ val[0] }}, {{ val[0] }}, {{ val[0] }})">
+            <!-- {{ val[0] }} -->
           </div>
-        {% endif %}
-      {% endfor %}
-    </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+<div class="container has-text-centered footer-section">
+  <div class="is-italic has-text-grey">
+    Non-zero Probabilities:
+  </div>
+  <div class="field is-grouped is-grouped-multiline">
+    {% for field, value in probabilities.items() %}
+      {% if value >= 0.000001 %}
+        <div class="control">
+          <div class="tags has-addons are-small">
+            <span class="tag is-dark">{{ field }}</span>
+            <span class="tag {% if value > 0.5 %}is-success{% endif %}">{{ '%.5f%%' % (value * 100) }}</span>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
   </div>
 </div>
 {% endblock %}

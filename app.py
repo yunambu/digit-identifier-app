@@ -21,7 +21,7 @@ def load_keras_model():
     # Only load model once
     if not model:
         print("------------------------>>>> loading model...")
-        model = load_model('./mnistmodel.h5')
+        model = load_model('./mnistmodel_cnn.h5')
     return model
 
 
@@ -42,7 +42,7 @@ def process_form():
 
     image = request.files["image"].read()
     image = Image.open(io.BytesIO(image))
-    image = prepare_image(image, target_size=(28, 28))
+    image, image_display = prepare_image(image, target_size=(28, 28))
 
     model = load_keras_model()
 
@@ -58,9 +58,7 @@ def process_form():
     for num, p in enumerate(prediction_probabilities_list, start=0):
         prediction_probabilities[num] = p
 
-    # TODO: Return image that we're passing to model (28x28) but as an array, so we can build a representation on the frontend (with large pixels)
-
-    return render_template('results.html', prediction=prediction_classes[0], probabilities=prediction_probabilities)
+    return render_template('results.html', prediction=prediction_classes[0], probabilities=prediction_probabilities, image=image_display)
 
 
 def valid_image_request():
@@ -76,17 +74,50 @@ def prepare_image(image, target_size):
     # Model is trained on inverted images, so we must invert our input
     image = ImageOps.invert(image)
 
-    # resize the input image and preprocess it
-    image = image.resize(target_size)
+    # autocontrast cleans up photos that are taken in e.g. lower light
+    image = ImageOps.autocontrast(image, cutoff=2)
+
+    # --- Let's try to smart crop the image by finding the digit, to handle imperfect images
+    # ref: https://codereview.stackexchange.com/a/132933
+    # Assume that any pixel with value of 25 or less is black (part of background, since inverted)
+    mask = img_to_array(image) > 75
+
+    # Find coordinates of non-black pixels
+    coords = np.argwhere(mask)
+
+    # Bounding box of non-black pixels.
+    y0, x0, _ = coords.min(axis=0)
+    y1, x1, _ = coords.max(axis=0) + 1   # slices are exclusive at the top
+
+    # Get the contents of the bounding box.
+    cropped = image.crop((x0, y0, x1, y1))
+
+    # Make the image square, with the size being the largest current size
+    new_size = max(cropped.size)
+    width_border = int((new_size - cropped.size[0]) / 2)
+    height_border = int((new_size - cropped.size[1]) / 2)
+    border = (width_border, height_border, width_border, height_border)
+    image = ImageOps.expand(cropped, border=border)
+
+    # Convert to final size, minus a border
+    image = ImageOps.fit(image, size=(20, 20))
+
+    # add border (so final size is 28x28)
+    image = ImageOps.expand(image, border=4)
+
+    # Convert into input format for model
     image = img_to_array(image)
     image = np.expand_dims(image, axis=0)
 
-    # NOTE: CNN model does not need this
-    # We need 1x784 shape as input for this model
+    # 28x28 image used for display
+    # (if using CNN, this is the same as the model input image)
+    image_display = image
+
+    # NOTE: CNN model does not need this (comment out if using CNN model)
     # image = image.reshape(1, 784)
 
     # return the processed image
-    return image
+    return image, image_display
 
 
 # Start the server
