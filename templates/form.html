@@ -4,23 +4,24 @@
 
 {% block preendbody %}
 <script type="text/javascript">
+  var form = document.getElementById("digit-form");
   var file = document.getElementById("file");
   file.onchange = function () {
     if (file.files.length > 0) {
       document.getElementById('filename').innerHTML = file.files[0].name;
+      form.submit();
     }
   };
 </script>
 {% endblock %}
 
 {% block content %}
-<form method="post" action="./process_form" enctype="multipart/form-data">
+<form id="digit-form" method="post" action="./process_form" enctype="multipart/form-data">
   <div class="columns">
     <div class="column is-half is-offset-one-quarter">
       <div class="notification">
         Welcome to our digit identifier! Upload an image of a handwritten digit, and we will attempt
-        to predict what number it represents. For best results, upload an image with a white background
-        and written digit centered.
+        to predict what number it represents.
       </div>
 
       <div class="field">
@@ -45,7 +46,7 @@
       <div class="buttons is-centered">
         <div class="field is-grouped">
           <div class="control">
-            <input type="submit" class="button is-link">
+            <!-- <input type="submit" class="button is-link"> -->
           </div>
         </div>
       </div>
