@@ -114,7 +114,7 @@ def smart_crop(image):
         return image
 
     # Assume that any pixel with value of 75 or less is black (part of background, since inverted)
-    mask = img_to_array(image) > 75
+    mask = img_to_array(image) > 100
 
     # Find coordinates of non-black pixels
     coords = np.argwhere(mask)
