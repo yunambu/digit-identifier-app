@@ -42,7 +42,7 @@ def process_form():
 
     image = request.files["image"].read()
     image = Image.open(io.BytesIO(image))
-    image, image_display = prepare_image(image, target_size=(28, 28))
+    image, image_display = prepare_image(image)
 
     model = load_keras_model()
 
@@ -65,7 +65,7 @@ def valid_image_request():
     return request.method == "POST" and request.files.get("image")
 
 
-def prepare_image(image, target_size):
+def prepare_image(image, should_smart_crop=True):
     # if the image mode is not grayscale ("L"), convert it
     # https://pillow.readthedocs.io/en/4.1.x/handbook/concepts.html#modes
     if image.mode != "L":
@@ -77,9 +77,39 @@ def prepare_image(image, target_size):
     # autocontrast cleans up photos that are taken in e.g. lower light
     image = ImageOps.autocontrast(image, cutoff=2)
 
+    if should_smart_crop:
+        # Smart crop will attempt to find and auto-crop a digit in the image.
+        # Returns a 28x28 image
+        image = smart_crop(image)
+    else:
+        image = ImageOps.fit(image, size=(28, 28))
+
+    # Convert into input format for model
+    image = img_to_array(image)
+    image = np.expand_dims(image, axis=0)
+
+    # 28x28 image used for display
+    # (if using CNN, this is the same as the model input image)
+    image_display = image
+
+    # NOTE: CNN model does not need this (comment out if using CNN model)
+    # image = image.reshape(1, 784)
+
+    # return the processed image
+    return image, image_display
+
+
+def smart_crop(image):
+    # NOTE: Don't worry about the details of this method
     # --- Let's try to smart crop the image by finding the digit, to handle imperfect images
     # ref: https://codereview.stackexchange.com/a/132933
-    # Assume that any pixel with value of 25 or less is black (part of background, since inverted)
+
+    # This will not work well for images that are already small (i.e. already 28x28)
+    # In that case, return the image directly
+    if image.size == (28, 28):
+        return image
+
+    # Assume that any pixel with value of 75 or less is black (part of background, since inverted)
     mask = img_to_array(image) > 75
 
     # Find coordinates of non-black pixels
@@ -105,20 +135,7 @@ def prepare_image(image, target_size):
     # add border (so final size is 28x28)
     image = ImageOps.expand(image, border=4)
 
-    # Convert into input format for model
-    image = img_to_array(image)
-    image = np.expand_dims(image, axis=0)
-
-    # 28x28 image used for display
-    # (if using CNN, this is the same as the model input image)
-    image_display = image
-
-    # NOTE: CNN model does not need this (comment out if using CNN model)
-    # image = image.reshape(1, 784)
-
-    # return the processed image
-    return image, image_display
-
+    return image
 
 # Start the server
 if __name__ == "__main__":
