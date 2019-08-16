@@ -5,11 +5,15 @@
 {% block preendbody %}
 <script type="text/javascript">
   var form = document.getElementById("digit-form");
+  var submitButton = document.getElementById("btn-submit")
   var file = document.getElementById("file");
   file.onchange = function () {
     if (file.files.length > 0) {
       document.getElementById('filename').innerHTML = file.files[0].name;
       form.submit();
+
+      // Change submit button to show loading indicator
+      submitButton.className += " is-loading";
     }
   };
 </script>
@@ -46,12 +50,10 @@
       <div class="buttons is-centered">
         <div class="field is-grouped">
           <div class="control">
-            <!-- <input type="submit" class="button is-link"> -->
+            <button id="btn-submit" type="submit" class="button is-link">Submit</button>
           </div>
         </div>
       </div>
-
-
     </div>
   </div>
 </form>
