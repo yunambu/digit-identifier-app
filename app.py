@@ -4,10 +4,11 @@ from keras.models import load_model
 from keras.preprocessing.image import img_to_array
 from keras.applications import imagenet_utils
 import numpy as np
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ExifTags
 from werkzeug.exceptions import HTTPException
 import traceback
 import io
+import functools
 
 app = Flask(__name__)
 model = None
@@ -42,6 +43,9 @@ def process_form():
 
     image = request.files["image"].read()
     image = Image.open(io.BytesIO(image))
+    # Note that when using images uploaded from iphones, sometimes they will be rotated incorrectly.
+    # This method fixes rotation if needed.
+    image = image_transpose_exif(image)
     image, image_display = prepare_image(image)
 
     model = load_keras_model()
@@ -136,6 +140,34 @@ def smart_crop(image):
     image = ImageOps.expand(image, border=4)
 
     return image
+
+
+def image_transpose_exif(im):
+    """
+    Fixes rotation of image, by checking EXIF data.
+    This fixes issues with images uploaded directly from a smart phone camera.
+    Source: https://stackoverflow.com/a/30462851/76710
+    """
+
+    exif_orientation_tag = 0x0112
+    exif_transpose_sequences = [                   # Val  0th row  0th col
+        [],                                        #  0    (reserved)
+        [],                                        #  1   top      left
+        [Image.FLIP_LEFT_RIGHT],                   #  2   top      right
+        [Image.ROTATE_180],                        #  3   bottom   right
+        [Image.FLIP_TOP_BOTTOM],                   #  4   bottom   left
+        [Image.FLIP_LEFT_RIGHT, Image.ROTATE_90],  #  5   left     top
+        [Image.ROTATE_270],                        #  6   right    top
+        [Image.FLIP_TOP_BOTTOM, Image.ROTATE_90],  #  7   right    bottom
+        [Image.ROTATE_90],                         #  8   left     bottom
+    ]
+
+    try:
+        seq = exif_transpose_sequences[im._getexif()[exif_orientation_tag]]
+    except Exception:
+        return im
+    else:
+        return functools.reduce(type(im).transpose, seq, im)
 
 # Start the server
 if __name__ == "__main__":
