@@ -22,6 +22,7 @@ def load_keras_model():
     # Only load model once
     if not model:
         print("------------------------>>>> loading model...")
+        # TODO: Update to your model's filename
         model = load_model('./mnistmodel_cnn.h5')
     return model
 
@@ -32,6 +33,9 @@ def form():
     return render_template('form.html')
 
 
+# Process the uploaded image:
+#  - Apply transformations to build up the input to the model (we need a 28x28 image)
+#  - Use the model to perform the prediction
 @app.route('/process_form', methods=["POST"])
 def process_form():
     if not valid_image_request():
@@ -40,17 +44,21 @@ def process_form():
             "error": "You must provide a valid `image`."
         })
 
+    # Load the uploaded image into the `image` variable
     image = request.files["image"].read()
     image = Image.open(io.BytesIO(image))
 
     # Note that when using images uploaded from iphones, sometimes they will be rotated incorrectly.
     # This method fixes rotation if needed.
     image = fix_image_rotation(image)
+
+    # The `prepare_image` method will transform the input image into
+    # a 28x28 image that we can use as input for our model.
     image, image_display = prepare_image(image)
 
     model = load_keras_model()
 
-    # Returns an np array.. convert to list with .tolist()
+    # Returns an np array. Convert to list with .tolist()
     prediction_classes = model.predict_classes(image).tolist()
 
     # Displays probability for each number
@@ -58,6 +66,7 @@ def process_form():
     prediction_probabilities = {}
 
     # Turn this into a dictionary of digit => probability
+    # We will use this to display the probabilities on the result page
     prediction_probabilities = {}
     for num, p in enumerate(prediction_probabilities_list, start=0):
         prediction_probabilities[num] = p
@@ -81,7 +90,7 @@ def prepare_image(image):
     # Model is trained on inverted images, so we must invert our input
     image = ImageOps.invert(image)
 
-    # autocontrast cleans up photos that are taken in e.g. lower light
+    # autocontrast cleans up photos that are taken in lower light
     image = ImageOps.autocontrast(image, cutoff=2)
 
     # Convert into input format for model
