@@ -69,7 +69,7 @@ def valid_image_request():
     return request.method == "POST" and request.files.get("image")
 
 
-def prepare_image(image, should_smart_crop=True):
+def prepare_image(image, should_smart_crop=False):
     # if the image mode is not grayscale ("L"), convert it
     # https://pillow.readthedocs.io/en/4.1.x/handbook/concepts.html#modes
     if image.mode != "L":
