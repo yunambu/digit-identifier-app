@@ -6,6 +6,7 @@ from keras.applications import imagenet_utils
 import numpy as np
 from PIL import Image, ImageOps, ExifTags
 from werkzeug.exceptions import HTTPException
+from image_helpers import smart_crop
 import traceback
 import io
 import functools
@@ -69,7 +70,10 @@ def valid_image_request():
     return request.method == "POST" and request.files.get("image")
 
 
-def prepare_image(image, should_smart_crop=False):
+def prepare_image(image):
+    # Resize image first, so that future operations on the image are faster
+    image = ImageOps.fit(image, size=(28, 28))
+
     # if the image mode is not grayscale ("L"), convert it
     # https://pillow.readthedocs.io/en/4.1.x/handbook/concepts.html#modes
     if image.mode != "L":
@@ -80,13 +84,6 @@ def prepare_image(image, should_smart_crop=False):
 
     # autocontrast cleans up photos that are taken in e.g. lower light
     image = ImageOps.autocontrast(image, cutoff=2)
-
-    if should_smart_crop:
-        # Smart crop will attempt to find and auto-crop a digit in the image.
-        # Returns a 28x28 image
-        image = smart_crop(image)
-    else:
-        image = ImageOps.fit(image, size=(28, 28))
 
     # Convert into input format for model
     image = img_to_array(image)
@@ -101,45 +98,6 @@ def prepare_image(image, should_smart_crop=False):
 
     # return the processed image
     return image, image_display
-
-
-def smart_crop(image):
-    # NOTE: Don't worry about the details of this method
-    # --- Let's try to smart crop the image by finding the digit, to handle imperfect images
-    # ref: https://codereview.stackexchange.com/a/132933
-
-    # This will not work well for images that are already small (i.e. already 28x28)
-    # In that case, return the image directly
-    if image.size == (28, 28):
-        return image
-
-    # Assume that any pixel with value of 75 or less is black (part of background, since inverted)
-    mask = img_to_array(image) > 100
-
-    # Find coordinates of non-black pixels
-    coords = np.argwhere(mask)
-
-    # Bounding box of non-black pixels.
-    y0, x0, _ = coords.min(axis=0)
-    y1, x1, _ = coords.max(axis=0) + 1   # slices are exclusive at the top
-
-    # Get the contents of the bounding box.
-    cropped = image.crop((x0, y0, x1, y1))
-
-    # Make the image square, with the size being the largest current size
-    new_size = max(cropped.size)
-    width_border = int((new_size - cropped.size[0]) / 2)
-    height_border = int((new_size - cropped.size[1]) / 2)
-    border = (width_border, height_border, width_border, height_border)
-    image = ImageOps.expand(cropped, border=border)
-
-    # Convert to final size, minus a border
-    image = ImageOps.fit(image, size=(20, 20))
-
-    # add border (so final size is 28x28)
-    image = ImageOps.expand(image, border=4)
-
-    return image
 
 
 def image_transpose_exif(im):
