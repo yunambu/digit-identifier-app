@@ -23,7 +23,7 @@ def load_keras_model():
     if not model:
         print("------------------------>>>> loading model...")
         # TODO: Update to your model's filename
-        model = load_model('./mnistmodel_basic.h5')
+        model = load_model('./mnistmodel.h5')
     return model
 
 
