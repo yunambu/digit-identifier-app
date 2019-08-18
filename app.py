@@ -23,7 +23,7 @@ def load_keras_model():
     if not model:
         print("------------------------>>>> loading model...")
         # TODO: Update to your model's filename
-        model = load_model('./mnistmodel_cnn.h5')
+        model = load_model('./mnistmodel_basic.h5')
     return model
 
 
@@ -101,8 +101,8 @@ def prepare_image(image):
     # (if using CNN, this is the same as the model input image)
     image_display = image
 
-    # NOTE: CNN model does not need this (comment out if using CNN model)
-    # image = image.reshape(1, 784)
+    # TODO: Note that CNN model does not need this (comment out if using CNN model)
+    image = image.reshape(1, 784)
 
     # return the processed image
     return image, image_display
