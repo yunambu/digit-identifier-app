@@ -34,7 +34,7 @@ def form():
 
 
 # Process the uploaded image:
-#  - Apply transformations to build up the input to the model (we need a 28x28 image)
+#  - Apply transformations to build up the input to the model
 #  - Use the model to perform the prediction
 @app.route('/process_form', methods=["POST"])
 def process_form():
@@ -52,8 +52,7 @@ def process_form():
     # This method fixes rotation if needed.
     image = fix_image_rotation(image)
 
-    # The `prepare_image` method will transform the input image into
-    # a 28x28 image that we can use as input for our model.
+    # The `prepare_image` method will transform the input image into a 28x28 image.
     image, image_display = prepare_image(image)
 
     model = load_keras_model()
@@ -79,6 +78,12 @@ def valid_image_request():
 
 
 def prepare_image(image):
+    """
+    Useful Documentation:
+    Image Module: https://pillow.readthedocs.io/en/stable/reference/Image.html
+    ImageOps Module: https://pillow.readthedocs.io/en/3.0.x/reference/ImageOps.html
+    """
+
     # Resize image first, so that future operations on the image are faster
     image = ImageOps.fit(image, size=(28, 28))
 
@@ -97,11 +102,12 @@ def prepare_image(image):
     image = img_to_array(image)
     image = np.expand_dims(image, axis=0)
 
-    # 28x28 image used for display
+    # 28x28 image used for display on results page.
     # (if using CNN, this is the same as the model input image)
     image_display = image
 
-    # TODO: Note that CNN model does not need this (comment out if using CNN model)
+    # Convert from 28x28 image to
+    # NOTE: The CNN model does not need this step (comment out if using CNN model)
     image = image.reshape(1, 784)
 
     # return the processed image
